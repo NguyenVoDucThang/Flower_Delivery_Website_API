@@ -84,7 +84,7 @@ public class MailService {
             log.debug("Email doesn't exist");
             return;
         }
-        Locale locale = Locale.forLanguageTag("EN");
+        Locale locale = Locale.forLanguageTag("en-US");
         Context context = new Context(locale);
         context.setVariable(USER, people);
         context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
