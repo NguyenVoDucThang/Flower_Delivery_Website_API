@@ -60,7 +60,7 @@ spring:
   r2dbc:
     url: r2dbc:mariadb://localhost:3306/Flower_Delivery_Website_API?useLegacyDatetimeCode=false&serverTimezone=UTC
     username: root
-    password:
+    password: HOA22thuong)%
   thymeleaf:
     cache: false
   sleuth:
