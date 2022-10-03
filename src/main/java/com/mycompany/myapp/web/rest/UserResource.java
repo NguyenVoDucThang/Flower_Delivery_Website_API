@@ -238,7 +238,7 @@ public class UserResource {
      */
     @DeleteMapping("/users/{login}")
     @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
-    public Mono<ResponseEntity<Void>> deleteUser(@PathVariable @Pattern(regexp = Constants.LOGIN_REGEX) String login) {
+    public Mono<ResponseEntity<Void>> deleteUser(@PathVariable @Pattern(regexp = Constants.EMAIL_REGEX) String login) {
         log.debug("REST request to delete User: {}", login);
         return userService
             .deleteUser(login)

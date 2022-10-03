@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -119,15 +120,16 @@ public class UserService {
                     newUser.setPassword(encryptedPassword);
                     newUser.setFirstName(userDTO.getFirstName());
                     newUser.setLastName(userDTO.getLastName());
-                    if (userDTO.getEmail() != null) {
-                        newUser.setEmail(userDTO.getEmail().toLowerCase());
-                    }
+                    //                    if (userDTO.getEmail() != null) {
+                    //                        newUser.setEmail(userDTO.getEmail().toLowerCase());
+                    //                    }
+                    newUser.setEmail(userDTO.getLogin().toLowerCase());
                     newUser.setImageUrl(userDTO.getImageUrl());
                     newUser.setLangKey(userDTO.getLangKey());
                     // new user is not active
                     newUser.setActivated(false);
                     // new user gets registration key
-                    newUser.setActivationKey(RandomUtil.generateActivationKey());
+                    newUser.setActivationKey(RandomStringUtils.randomNumeric(6));
                     return newUser;
                 })
             )
@@ -308,6 +310,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Mono<User> getUserWithAuthoritiesByLogin(String login) {
+        System.out.println("HELLO: " + login);
         return userRepository.findOneWithAuthoritiesByLogin(login);
     }
 

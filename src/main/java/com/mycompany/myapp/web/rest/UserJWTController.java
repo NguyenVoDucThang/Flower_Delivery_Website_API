@@ -1,8 +1,11 @@
 package com.mycompany.myapp.web.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mycompany.myapp.domain.User;
+import com.mycompany.myapp.security.SecurityUtils;
 import com.mycompany.myapp.security.jwt.JWTFilter;
 import com.mycompany.myapp.security.jwt.TokenProvider;
+import com.mycompany.myapp.service.UserService;
 import com.mycompany.myapp.web.rest.vm.LoginVM;
 import javax.validation.Valid;
 import org.springframework.http.HttpHeaders;
