@@ -125,7 +125,8 @@ public class UserService {
                     //                    }
                     newUser.setEmail(userDTO.getLogin().toLowerCase());
                     newUser.setImageUrl(userDTO.getImageUrl());
-                    newUser.setLangKey(userDTO.getLangKey());
+                    //                    newUser.setLangKey(userDTO.getLangKey());
+                    newUser.setLangKey("en");
                     // new user is not active
                     newUser.setActivated(false);
                     // new user gets registration key
@@ -324,7 +325,7 @@ public class UserService {
      * <p>
      * This is scheduled to get fired everyday, at 01:00 (am).
      */
-    @Scheduled(cron = "0 0 1 * * ?")
+    @Scheduled(cron = "0 1 * * * ?")
     public void removeNotActivatedUsers() {
         removeNotActivatedUsersReactively().blockLast();
     }
