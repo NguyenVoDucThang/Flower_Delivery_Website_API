@@ -17,6 +17,7 @@ import java.util.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -325,7 +326,7 @@ public class UserService {
      * <p>
      * This is scheduled to get fired everyday, at 01:00 (am).
      */
-    @Scheduled(cron = "0 1 * * * ?")
+    @Scheduled(cron = "0 0/3 * * * ?")
     public void removeNotActivatedUsers() {
         removeNotActivatedUsersReactively().blockLast();
     }
@@ -334,7 +335,7 @@ public class UserService {
     public Flux<User> removeNotActivatedUsersReactively() {
         return userRepository
             .findAllByActivatedIsFalseAndActivationKeyIsNotNullAndCreatedDateBefore(
-                LocalDateTime.ofInstant(Instant.now().minus(3, ChronoUnit.DAYS), ZoneOffset.UTC)
+                LocalDateTime.ofInstant(Instant.now().minus(2, ChronoUnit.MINUTES), ZoneOffset.UTC)
             )
             .flatMap(user -> userRepository.delete(user).thenReturn(user))
             .doOnNext(user -> log.debug("Deleted User: {}", user));
