@@ -3,12 +3,14 @@ package com.mycompany.myapp.web.rest;
 import com.mycompany.myapp.repository.UserRepository;
 import com.mycompany.myapp.security.SecurityUtils;
 import com.mycompany.myapp.service.MailService;
+import com.mycompany.myapp.service.PeopleService;
 import com.mycompany.myapp.service.UserService;
 import com.mycompany.myapp.service.dto.AdminUserDTO;
 import com.mycompany.myapp.service.dto.PasswordChangeDTO;
 import com.mycompany.myapp.web.rest.errors.*;
 import com.mycompany.myapp.web.rest.vm.KeyAndPasswordVM;
 import com.mycompany.myapp.web.rest.vm.ManagedUserVM;
+import com.mycompany.myapp.web.rest.vm.PeopleVM;
 import java.security.Principal;
 import java.util.Objects;
 import javax.validation.Valid;
@@ -40,12 +42,46 @@ public class AccountResource {
 
     private final UserService userService;
 
+    private final PeopleService peopleService;
+
     private final MailService mailService;
 
-    public AccountResource(UserRepository userRepository, UserService userService, MailService mailService) {
+    public AccountResource(UserRepository userRepository, UserService userService, PeopleService peopleService, MailService mailService) {
         this.userRepository = userRepository;
         this.userService = userService;
+        this.peopleService = peopleService;
         this.mailService = mailService;
+    }
+
+    /**
+     * {@code POST  /registerPeople} : register the user.
+     *
+     * @param peopleVM the managed user View Model.
+     * @throws InvalidPasswordException {@code 400 (Bad Request)} if the password is incorrect.
+     * @throws EmailAlreadyUsedException {@code 400 (Bad Request)} if the email is already used.
+     * @throws LoginAlreadyUsedException {@code 400 (Bad Request)} if the login is already used.
+     */
+    @PostMapping("/registerPeople")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<Void> registerAccountPeople(@Valid @RequestBody PeopleVM peopleVM) {
+        if (isPasswordLengthInvalid(peopleVM.getPassword())) {
+            throw new InvalidPasswordException();
+        }
+        return peopleService.registerUser(peopleVM).doOnSuccess(mailService::sendActivationEmailPeople).then();
+    }
+
+    /**
+     * {@code GET  /activatePeople} : activate the registered user.
+     *
+     * @param key the activation key.
+     * @throws RuntimeException {@code 500 (Internal Server Error)} if the user couldn't be activated.
+     */
+    @GetMapping("/activatePeople")
+    public Mono<Void> activateAccountPeople(@RequestParam(value = "key") String key) {
+        return peopleService
+            .activateRegistration(key)
+            .switchIfEmpty(Mono.error(new AccountResourceException("No user was found for this activation key")))
+            .then();
     }
 
     /**

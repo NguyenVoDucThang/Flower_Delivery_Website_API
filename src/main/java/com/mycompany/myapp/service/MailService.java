@@ -1,5 +1,6 @@
 package com.mycompany.myapp.service;
 
+import com.mycompany.myapp.domain.People;
 import com.mycompany.myapp.domain.User;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -75,6 +76,27 @@ public class MailService {
         } catch (MailException | MessagingException e) {
             log.warn("Email could not be sent to user '{}'", to, e);
         }
+    }
+
+    @Async
+    public void sendEmailFromTemplatePeople(People people, String templateName, String titleKey) {
+        if (people.getEmail() == null) {
+            log.debug("Email doesn't exist");
+            return;
+        }
+        Locale locale = Locale.forLanguageTag("en-US");
+        Context context = new Context(locale);
+        context.setVariable(USER, people);
+        context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
+        String content = templateEngine.process(templateName, context);
+        String subject = messageSource.getMessage(titleKey, null, locale);
+        sendEmail(people.getEmail(), subject, content, false, true);
+    }
+
+    @Async
+    public void sendActivationEmailPeople(People people) {
+        log.debug("Sending activation email to '{}'", people.getEmail());
+        sendEmailFromTemplatePeople(people, "mail/activationEmail", "email.activation.title");
     }
 
     @Async
