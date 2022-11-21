@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -78,6 +79,9 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
     @JsonIgnore
     @Transient
     private Set<Authority> authorities = new HashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<Cart> carts;
 
     public Long getId() {
         return id;
