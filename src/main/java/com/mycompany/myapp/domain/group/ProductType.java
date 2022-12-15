@@ -1,4 +1,4 @@
-package com.mycompany.myapp.domain;
+package com.mycompany.myapp.domain.group;
 
 public enum ProductType {
     Flower,

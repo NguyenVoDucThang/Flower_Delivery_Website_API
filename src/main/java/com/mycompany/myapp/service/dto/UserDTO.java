@@ -1,5 +1,6 @@
 package com.mycompany.myapp.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mycompany.myapp.domain.User;
 import java.io.Serializable;
 
@@ -10,6 +11,7 @@ public class UserDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Long id;
 
     private String login;

@@ -1,33 +1,41 @@
 package com.mycompany.myapp.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.time.Instant;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+@Entity
 @Table("delivery")
 public class Delivery implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
+    @org.springframework.data.annotation.Id
+    @Column("delivery_id")
+    @GeneratedValue(generator = "delivery-generator")
+    @GenericGenerator(
+        name = "delivery-generator",
+        parameters = { @Parameter(name = "prefix", value = "DE") },
+        strategy = "com.mycompany.myapp.domain.idgenerator.IDGenerator"
+    )
     private String id;
 
     @Column("delivery_date")
     private Instant delivery_date;
 
     @Size(max = 200)
-    @Column("message")
+    @Column("delivery_message")
     private String message;
 
-    @Column("occasion")
+    @Column("delivery_occasion")
     private String occasion;
-
-    @OneToOne(mappedBy = "delivery")
-    private Cart cart;
 
     public Delivery(String id, Instant delivery_date, String message, String occasion) {
         this.id = id;

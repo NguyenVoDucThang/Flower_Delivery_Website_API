@@ -188,26 +188,18 @@ public class UserResource {
     /**
      * {@code GET /admin/users} : get all users with all the details - calling this are only allowed for the administrators.
      *
-     * @param request a {@link ServerHttpRequest} request.
      * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body all users.
      */
     @GetMapping("/users")
     @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
-    public Mono<ResponseEntity<Flux<AdminUserDTO>>> getAllUsers(
-        @org.springdoc.api.annotations.ParameterObject ServerHttpRequest request,
-        @org.springdoc.api.annotations.ParameterObject Pageable pageable
-    ) {
+    public Mono<ResponseEntity<Flux<AdminUserDTO>>> getAllUsers(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get all User for an admin");
         if (!onlyContainsAllowedProperties(pageable)) {
             return Mono.just(ResponseEntity.badRequest().build());
         }
 
-        return userService
-            .countManagedUsers()
-            .map(total -> new PageImpl<>(new ArrayList<>(), pageable, total))
-            .map(page -> PaginationUtil.generatePaginationHttpHeaders(UriComponentsBuilder.fromHttpRequest(request), page))
-            .map(headers -> ResponseEntity.ok().headers(headers).body(userService.getAllManagedUsers(pageable)));
+        return Mono.just(ResponseEntity.ok().body(userService.getAllManagedUsers(pageable)));
     }
 
     private boolean onlyContainsAllowedProperties(Pageable pageable) {

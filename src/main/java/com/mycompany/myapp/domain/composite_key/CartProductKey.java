@@ -1,4 +1,4 @@
-package com.mycompany.myapp.domain;
+package com.mycompany.myapp.domain.composite_key;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -8,10 +8,10 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class CartProductKey implements Serializable {
 
-    @Column(name = "cart_id")
+    @Column(name = "cp_cart_id")
     private String cartId;
 
-    @Column(name = "product_id")
+    @Column(name = "cp_product_id")
     private String productId;
 
     public CartProductKey() {}

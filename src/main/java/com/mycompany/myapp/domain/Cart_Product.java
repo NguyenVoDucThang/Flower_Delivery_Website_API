@@ -1,13 +1,13 @@
 package com.mycompany.myapp.domain;
 
+import com.mycompany.myapp.domain.composite_key.CartProductKey;
 import java.io.Serializable;
-import javax.persistence.EmbeddedId;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
+import java.util.Objects;
+import javax.persistence.*;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+@Entity
 @Table("cart_product")
 public class Cart_Product implements Serializable {
 
@@ -18,35 +18,33 @@ public class Cart_Product implements Serializable {
 
     @ManyToOne
     @MapsId("cartId")
-    @JoinColumn(name = "cart_id", referencedColumnName = "cart.id", nullable = false)
+    @JoinColumn(name = "cp_cart_id", referencedColumnName = "cart_id", table = "cart", nullable = false)
     private Cart cart;
 
     @ManyToOne
     @MapsId("productId")
-    @JoinColumn(name = "product_id", referencedColumnName = "product.id", nullable = false)
+    @JoinColumn(name = "cp_product_id", referencedColumnName = "product_id", table = "product", nullable = false)
     private Product product;
 
-    @Column("quantity")
+    @Column("cp_quantity")
     private int quantity;
 
     @Column("total")
-    private int total;
+    private int total = quantity * product.getPrice();
 
     public Cart_Product() {}
 
-    public Cart_Product(Cart cart, Product product, int quantity, int total) {
+    public Cart_Product(Cart cart, Product product, int quantity) {
         this.cart = cart;
         this.product = product;
         this.quantity = quantity;
-        this.total = total;
     }
 
-    public Cart_Product(CartProductKey id, Cart cart, Product product, int quantity, int total) {
+    public Cart_Product(CartProductKey id, Cart cart, Product product, int quantity) {
         this.id = id;
         this.cart = cart;
         this.product = product;
         this.quantity = quantity;
-        this.total = total;
     }
 
     public CartProductKey getId() {
@@ -85,7 +83,16 @@ public class Cart_Product implements Serializable {
         return total;
     }
 
-    public void setTotal(int total) {
-        this.total = total;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Cart_Product)) return false;
+        Cart_Product that = (Cart_Product) o;
+        return getId().equals(that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

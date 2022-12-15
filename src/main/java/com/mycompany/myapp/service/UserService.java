@@ -326,10 +326,10 @@ public class UserService {
      * <p>
      * This is scheduled to get fired everyday, at 01:00 (am).
      */
-    @Scheduled(cron = "0 0/3 * * * ?")
-    public void removeNotActivatedUsers() {
-        removeNotActivatedUsersReactively().blockLast();
-    }
+    //    @Scheduled(cron = "0 0/3 * * * ?")
+    //    public void removeNotActivatedUsers() {
+    //        removeNotActivatedUsersReactively().blockLast();
+    //    }
 
     @Transactional
     public Flux<User> removeNotActivatedUsersReactively() {

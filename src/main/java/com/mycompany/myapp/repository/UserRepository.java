@@ -59,7 +59,7 @@ public interface UserRepository extends R2dbcRepository<User, Long>, UserReposit
 }
 
 interface DeleteExtended<T> {
-    Mono<Void> delete(T user);
+    Mono<Void> delete(T object);
 }
 
 interface UserRepositoryInternal extends DeleteExtended<User> {

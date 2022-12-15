@@ -5,15 +5,15 @@ import com.mycompany.myapp.config.Constants;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -21,12 +21,14 @@ import org.springframework.data.relational.core.mapping.Table;
 /**
  * A user.
  */
+@Entity
 @Table("jhi_user")
 public class User extends AbstractAuditingEntity<Long> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
+    @org.springframework.data.annotation.Id
     private Long id;
 
     @NotNull
@@ -78,10 +80,8 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
 
     @JsonIgnore
     @Transient
+    @ManyToMany
     private Set<Authority> authorities = new HashSet<>();
-
-    @OneToMany(mappedBy = "user")
-    private Set<Cart> carts;
 
     public Long getId() {
         return id;

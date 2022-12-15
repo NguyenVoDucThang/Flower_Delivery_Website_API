@@ -1,90 +1,46 @@
-package com.mycompany.myapp.domain;
+package com.mycompany.myapp.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mycompany.myapp.domain.Product;
 import com.mycompany.myapp.domain.group.ProductType;
 import java.io.Serializable;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import javax.persistence.*;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
-@Table("product")
-public class Product implements Serializable {
+public class ProductDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @org.springframework.data.annotation.Id
-    @Column("product_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prod-generator")
-    @GenericGenerator(
-        name = "prod-generator",
-        strategy = "com.mycompany.myapp.domain.idgenerator.IDGenerator",
-        parameters = { @Parameter(name = "prefix", value = "SP") }
-    )
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String id;
 
-    @Column("product_name")
     private String name;
 
-    @Column("product_type")
     private ProductType type;
 
-    @Column("product_price")
     private int price;
 
-    @Column("product_feature")
     private String feature;
 
-    @Column("product_detail")
     private String detail;
 
-    @Column("product_image_url")
     private String image_url;
 
-    @Column("product_sold_num")
     private int sold_num;
 
-    @Column("product_quantity")
     private int quantity;
 
-    public Product() {}
+    public ProductDTO() {}
 
-    public Product(String name, ProductType type, int price, String feature, String detail, String image_url, int sold_num, int quantity) {
-        this.name = name;
-        this.type = type;
-        this.price = price;
-        this.feature = feature;
-        this.detail = detail;
-        this.image_url = image_url;
-        this.sold_num = sold_num;
-        this.quantity = quantity;
-    }
-
-    public Product(
-        String id,
-        String name,
-        ProductType type,
-        int price,
-        String feature,
-        String detail,
-        String image_url,
-        int sold_num,
-        int quantity
-    ) {
-        this.id = id;
-        this.name = name;
-        this.type = type;
-        this.price = price;
-        this.feature = feature;
-        this.detail = detail;
-        this.image_url = image_url;
-        this.sold_num = sold_num;
-        this.quantity = quantity;
+    public ProductDTO(Product product) {
+        this.id = product.getId();
+        this.name = product.getName();
+        this.type = product.getType();
+        this.price = product.getPrice();
+        this.feature = product.getFeature();
+        this.detail = product.getDetail();
+        this.image_url = product.getImage_url();
+        this.sold_num = product.getSold_num();
+        this.quantity = product.getQuantity();
     }
 
     public String getId() {
@@ -162,7 +118,7 @@ public class Product implements Serializable {
     @Override
     public String toString() {
         return (
-            "Product{" +
+            "ProductDTO{" +
             "id='" +
             id +
             '\'' +
