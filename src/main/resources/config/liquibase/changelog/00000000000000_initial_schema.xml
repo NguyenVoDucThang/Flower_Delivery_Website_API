@@ -6,20 +6,31 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <changeSet id="00000000000000" author="jhipster">
-        <createSequence sequenceName="sequence_generator" startValue="1050" incrementBy="50"/>
+    <changeSet id="10000000000000" author="jhipster">
+        <createSequence sequenceName="sequenceGenerator" startValue="3" incrementBy="1"/>
     </changeSet>
-
+    <changeSet id="10000000000001" author="admin">
+        <createSequence sequenceName="cart_generator" startValue="10" incrementBy="1"/>
+    </changeSet>
+    <changeSet id="10000000000002" author="admin">
+        <createSequence sequenceName="prod_generator" startValue="37" incrementBy="1"/>
+    </changeSet>
+    <changeSet id="10000000000003" author="admin">
+        <createSequence sequenceName="delivery_generator" startValue="6" incrementBy="1"/>
+    </changeSet>
+    <changeSet id="10000000000004" author="admin">
+        <createSequence sequenceName="receiver_generator" startValue="9" incrementBy="1"/>
+    </changeSet>
     <!--
         JHipster core tables.
-        The initial schema has the '00000000000001' id, so that it is over-written if we re-generate it.
+        The initial schema has the '20000000000000' id, so that it is over-written if we re-generate it.
     -->
-    <changeSet id="00000000000001" author="jhipster">
+    <changeSet id="20000000000000" author="jhipster">
         <createTable tableName="jhi_user">
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="login" type="varchar(50)">
+            <column name="login" type="varchar(191)">
                 <constraints unique="true" nullable="false" uniqueConstraintName="ux_user_login"/>
             </column>
             <column name="password_hash" type="varchar(60)"/>
@@ -103,7 +114,211 @@
         </loadData>
     </changeSet>
 
-    <changeSet author="jhipster" id="00000000000002" context="test">
+    <changeSet id="20000000000001" author="admin">
+        <createTable tableName="cart">
+            <column name="cart_id" type="varchar(8)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="cart_status" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cart_total" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cart_receiver_id" type="varchar(6)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="cart_delivery_id" type="varchar(6)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="cart_user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="product">
+            <column name="product_id" type="varchar(5)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="product_name" type="varchar(255)">
+                <constraints unique="true" nullable="false" uniqueConstraintName="ux_product_name"/>
+            </column>
+            <column name="product_type" type="varchar(8)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_price" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_feature" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="product_detail" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="product_image_url" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="product_sold_num" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_quantity" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="cart_product">
+            <column name="cp_cart_id" type="varchar(8)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cp_product_id" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cp_quantity" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cp_total" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="cp_cart_id, cp_product_id" tableName="cart_product"/>
+
+        <addForeignKeyConstraint baseColumnNames="cp_cart_id"
+                                 baseTableName="cart_product"
+                                 constraintName="fk_cart_id"
+                                 referencedColumnNames="cart_id"
+                                 referencedTableName="cart"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"/>
+
+        <addForeignKeyConstraint baseColumnNames="cp_product_id"
+                                 baseTableName="cart_product"
+                                 constraintName="fk_product_id"
+                                 referencedColumnNames="product_id"
+                                 referencedTableName="product"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"/>
+
+        <createTable tableName="delivery">
+            <column name="delivery_id" type="varchar(6)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="delivery_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="delivery_message" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="delivery_occasion" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="receiver">
+            <column name="receiver_id" type="varchar(6)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="receiver_name" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="receiver_address" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="receiver_email" type="varchar(191)">
+                <constraints unique="true" nullable="true" uniqueConstraintName="ux_receiver_email"/>
+            </column>
+            <column name="receiver_phone_number" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="cart_receiver_id"
+                                 baseTableName="cart"
+                                 constraintName="cart_fk_receiver_id"
+                                 referencedColumnNames="receiver_id"
+                                 referencedTableName="receiver"
+                                 onDelete="SET NULL"
+                                 onUpdate="CASCADE"/>
+
+        <addForeignKeyConstraint baseColumnNames="cart_delivery_id"
+                                 baseTableName="cart"
+                                 constraintName="cart_fk_delivery_id"
+                                 referencedColumnNames="delivery_id"
+                                 referencedTableName="delivery"
+                                 onDelete="SET NULL"
+                                 onUpdate="CASCADE"/>
+
+        <addForeignKeyConstraint baseColumnNames="cart_user_id"
+                                 baseTableName="cart"
+                                 constraintName="cart_fk_user_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_user"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="20000000000002" author="admin">
+        <loadData
+            file="config/liquibase/data/delivery.csv"
+            separator=";"
+            tableName="delivery"
+            usePreparedStatements="true">
+            <column name="delivery_id" type="varchar(6)"/>
+            <column name="delivery_date" type="timestamp"/>
+            <column name="delivery_message" type="varchar(255)"/>
+            <column name="delivery_occasion" type="varchar(255)"/>
+        </loadData>
+        <loadData
+            file="config/liquibase/data/receiver.csv"
+            separator=";"
+            tableName="receiver"
+            usePreparedStatements="true">
+            <column name="receiver_id" type="varchar(6)"/>
+            <column name="receiver_name" type="varchar(30)"/>
+            <column name="receiver_address" type="varchar(255)"/>
+            <column name="receiver_email" type="varchar(191)"/>
+            <column name="receiver_phone_number" type="varchar(10)"/>
+        </loadData>
+        <loadData
+            file="config/liquibase/data/cart.csv"
+            separator=";"
+            tableName="cart"
+            usePreparedStatements="true">
+            <column name="cart_id" type="varchar(8)"/>
+            <column name="cart_status" type="varchar(10)"/>
+            <column name="cart_total" type="int"/>
+            <column name="cart_receiver_id" type="varchar(6)"/>
+            <column name="cart_delivery_id" type="varchar(6)"/>
+            <column name="cart_user_id" type="bigint"/>
+        </loadData>
+        <loadData
+            file="config/liquibase/data/product.csv"
+            separator=";"
+            tableName="product"
+            usePreparedStatements="true">
+            <column name="product_id" type="varchar(5)"/>
+            <column name="product_name" type="varchar(255)"/>
+            <column name="product_type" type="varchar(8)"/>
+            <column name="product_price" type="int"/>
+            <column name="product_feature" type="varchar(255)"/>
+            <column name="product_detail" type="varchar(255)"/>
+            <column name="product_image_url" type="varchar(255)"/>
+            <column name="product_sold_num" type="int"/>
+            <column name="product_quantity" type="int"/>
+        </loadData>
+        <loadData
+            file="config/liquibase/data/cart_product.csv"
+            separator=";"
+            tableName="cart_product"
+            usePreparedStatements="true">
+            <column name="cp_cart_id" type="varchar(8)"/>
+            <column name="cp_product_id" type="varchar(5)"/>
+            <column name="cp_quantity" type="int"/>
+            <column name="cp_total" type="bigint"/>
+        </loadData>
+    </changeSet>
+
+    <changeSet author="jhipster" id="3000000000000" context="test">
         <createTable tableName="jhi_date_time_wrapper">
             <column  name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="jhi_date_time_wrapperPK"/>

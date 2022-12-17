@@ -1,0 +1,6 @@
+delivery_id;delivery_date;delivery_message;delivery_occasion
+DE0001;2022-11-15;good;normal
+DE0002;2022-11-16;fast;normal
+DE0003;2022-11-17;ok;normal
+DE0004;2022-11-18;nice;normal
+DE0005;2022-11-19;perfect;normal

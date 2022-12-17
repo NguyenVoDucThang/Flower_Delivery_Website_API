@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.persistence.Column;
 import javax.validation.constraints.*;
 
 /**
@@ -19,8 +20,8 @@ public class AdminUserDTO implements Serializable {
     private Long id;
 
     @NotBlank
-    @Pattern(regexp = Constants.LOGIN_REGEX)
-    @Size(min = 1, max = 50)
+    @Pattern(regexp = Constants.EMAIL_REGEX)
+    @Size(min = 5, max = 254)
     private String login;
 
     @Size(max = 50)
