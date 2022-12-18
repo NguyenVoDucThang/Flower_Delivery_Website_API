@@ -4,6 +4,8 @@ import com.mycompany.myapp.domain.*;
 import com.mycompany.myapp.domain.composite_key.CartProductKey;
 import com.mycompany.myapp.domain.group.CartStatus;
 import com.mycompany.myapp.repository.*;
+import com.mycompany.myapp.security.AuthoritiesConstants;
+import com.mycompany.myapp.security.SecurityUtils;
 import com.mycompany.myapp.service.dto.CartDTO;
 import com.mycompany.myapp.service.dto.ProductCartDTO;
 import com.mycompany.myapp.web.rest.errors.notexists.DeliveryNotExistsException;
@@ -12,6 +14,8 @@ import com.mycompany.myapp.web.rest.errors.notexists.UserNotExistsException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -55,8 +59,7 @@ public class CartService {
         // set status of cart
         cart.setStatus(cartDTO.getStatus());
         // set user
-        Optional<User> userOptional = userRepository.findById(cartDTO.getUser().getId());
-        if (!userOptional.isPresent()) throw new UserNotExistsException(); else cart.setUser(userOptional.get());
+        SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneByLogin).ifPresent(user -> cart.setUser(user));
         // set delivery information
         if (cartDTO.getDelivery() != null) {
             Optional<Delivery> deliveryOptional = deliveryRepository.findById(cartDTO.getDelivery().getId());
@@ -94,16 +97,28 @@ public class CartService {
 
     @Transactional(readOnly = true)
     public Page<CartDTO> getAllCartsByStatus(Pageable pageable, CartStatus cartStatus) {
-        return cartRepository.findAllByStatus(pageable, cartStatus).map(CartDTO::new);
+        User user = SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneByLogin).get();
+        Set<String> auths = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
+        if (auths.contains(AuthoritiesConstants.ADMIN)) return cartRepository
+            .findAllByStatus(pageable, cartStatus)
+            .map(CartDTO::new); else return cartRepository.findAllByStatusAndUser(pageable, cartStatus, user).map(CartDTO::new);
     }
 
     @Transactional
     public void deleteCart(String id) {
-        cartRepository
-            .findOneById(id)
-            .ifPresent(cart -> {
-                cartRepository.delete(cart);
-                log.debug("Deleted Cart: {}", cart);
+        Cart cart = cartRepository.findOneById(id).get();
+        SecurityUtils
+            .getCurrentUserLogin()
+            .flatMap(userRepository::findOneByLogin)
+            .ifPresent(user -> {
+                Set<String> auths = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
+                if (auths.contains(AuthoritiesConstants.ADMIN)) {
+                    cartRepository.delete(cart);
+                    log.debug("Deleted Cart: {}", cart);
+                } else if (cart.getUser().equals(user)) {
+                    cartRepository.delete(cart);
+                    log.debug("Deleted Cart: {}", cart);
+                }
             });
     }
 }

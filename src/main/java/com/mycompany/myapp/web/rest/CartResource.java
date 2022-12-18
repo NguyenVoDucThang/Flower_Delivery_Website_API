@@ -45,7 +45,7 @@ public class CartResource {
     }
 
     @PostMapping("/carts")
-    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.USER + "\")")
     public ResponseEntity<CartDTO> createCart(@Valid @RequestBody CartDTO cartDTO) throws URISyntaxException {
         log.debug("REST request to save Cart: {}", cartDTO);
 
@@ -64,7 +64,7 @@ public class CartResource {
     }
 
     @GetMapping("/carts")
-    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.USER + "\")")
     public ResponseEntity<List<CartDTO>> getCartsByStatus(@ParameterObject Pageable pageable, @RequestParam CartStatus cartStatus) {
         log.debug("REST request to get all Carts with {} status", cartStatus);
 
@@ -75,7 +75,7 @@ public class CartResource {
     }
 
     @DeleteMapping("/carts/{id}")
-    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.USER + "\")")
     public ResponseEntity<Void> deleteCart(@PathVariable("id") String id) {
         log.debug("REST request to delete Cart: {}", id);
         cartService.deleteCart(id);

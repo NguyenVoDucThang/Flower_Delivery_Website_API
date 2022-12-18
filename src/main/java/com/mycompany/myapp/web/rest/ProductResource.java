@@ -80,7 +80,7 @@ public class ProductResource {
     }
 
     @GetMapping("/products")
-    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.USER + "\")")
     public ResponseEntity<List<ProductDTO>> getProductsByType(@ParameterObject Pageable pageable, @RequestParam ProductType type) {
         log.debug("REST request to get all Products with {} type", type);
 
@@ -90,7 +90,7 @@ public class ProductResource {
     }
 
     @GetMapping("/products/{name}")
-    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.USER + "\")")
     public ResponseEntity<ProductDTO> getProduct(@PathVariable("name") String name) {
         log.debug("REST request to get Product: {}", name);
         return ResponseUtil.wrapOrNotFound(productService.getProductByName(name));
