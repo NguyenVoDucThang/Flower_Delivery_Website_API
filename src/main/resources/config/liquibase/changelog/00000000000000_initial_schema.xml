@@ -7,7 +7,7 @@
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet id="10000000000000" author="jhipster">
-        <createSequence sequenceName="sequenceGenerator" startValue="3" incrementBy="1"/>
+        <createSequence sequenceName="sequence_generator" startValue="3" incrementBy="1"/>
     </changeSet>
     <changeSet id="10000000000001" author="admin">
         <createSequence sequenceName="cart_generator" startValue="10" incrementBy="1"/>
