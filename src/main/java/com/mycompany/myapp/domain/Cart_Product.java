@@ -77,6 +77,7 @@ public class Cart_Product implements Serializable {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+        this.total = quantity * this.product.getPrice();
     }
 
     public int getTotal() {
@@ -94,5 +95,12 @@ public class Cart_Product implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(getId());
+    }
+
+    @Override
+    public String toString() {
+        return (
+            "Cart_Product{" + "id=" + id + ", cart=" + cart + ", product=" + product + ", quantity=" + quantity + ", total=" + total + '}'
+        );
     }
 }

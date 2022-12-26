@@ -11,6 +11,7 @@ import com.mycompany.myapp.service.dto.ProductCartDTO;
 import com.mycompany.myapp.web.rest.errors.notexists.DeliveryNotExistsException;
 import com.mycompany.myapp.web.rest.errors.notexists.ReceiverNotExistsException;
 import com.mycompany.myapp.web.rest.errors.notexists.UserNotExistsException;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -37,19 +38,22 @@ public class CartService {
     private final DeliveryRepository deliveryRepository;
 
     private final ReceiverRepository receiverRepository;
+    private final CartProductRepository cartProductRepository;
 
     public CartService(
         CartRepository cartRepository,
         UserRepository userRepository,
         ProductRepository productRepository,
         DeliveryRepository deliveryRepository,
-        ReceiverRepository receiverRepository
+        ReceiverRepository receiverRepository,
+        CartProductRepository cartProductRepository
     ) {
         this.cartRepository = cartRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.deliveryRepository = deliveryRepository;
         this.receiverRepository = receiverRepository;
+        this.cartProductRepository = cartProductRepository;
     }
 
     @Transactional
@@ -57,9 +61,16 @@ public class CartService {
         Cart cart = new Cart();
 
         // set status of cart
-        cart.setStatus(cartDTO.getStatus());
+        cart.setStatus(CartStatus.Delivering);
         // set user
-        SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneByLogin).ifPresent(user -> cart.setUser(user));
+        SecurityUtils
+            .getCurrentUserLogin()
+            .flatMap(userRepository::findOneByLogin)
+            .ifPresent(user -> {
+                cart.setUser(user);
+                cart.setCreatedBy(user.getLogin());
+                cart.setLastModifiedBy(user.getLogin());
+            });
         // set delivery information
         if (cartDTO.getDelivery() != null) {
             Optional<Delivery> deliveryOptional = deliveryRepository.findById(cartDTO.getDelivery().getId());
@@ -120,5 +131,54 @@ public class CartService {
                     log.debug("Deleted Cart: {}", cart);
                 }
             });
+    }
+
+    @Transactional
+    public Optional<CartDTO> updateCart(CartDTO cartDTO) {
+        return Optional
+            .of(cartRepository.findById(cartDTO.getId()))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .map(cart -> {
+                cart.setStatus(cartDTO.getStatus());
+                if (cartDTO.getReceiver() != null) cart.setReceiver(cartDTO.getReceiver());
+                if (cartDTO.getDelivery() != null) cart.setDelivery(cartDTO.getDelivery());
+                SecurityUtils
+                    .getCurrentUserLogin()
+                    .flatMap(userRepository::findOneByLogin)
+                    .ifPresent(user -> {
+                        cart.setUser(user);
+                        cart.setLastModifiedBy(user.getLogin());
+                        cart.setLastModifiedDate(Instant.now());
+                    });
+                if (!cartDTO.getProducts().isEmpty()) {
+                    Set<Cart_Product> cartProductSet = cart.getCartProductSet();
+                    int total = 0;
+                    for (ProductCartDTO productDTO : cartDTO.getProducts()) {
+                        productRepository
+                            .findById(productDTO.getId())
+                            .map(product -> {
+                                CartProductKey key = new CartProductKey(cart.getId(), product.getId());
+                                Optional<Cart_Product> cart_product = cartProductRepository.findById(key);
+                                Cart_Product cp;
+                                if (cart_product.isPresent()) {
+                                    cp = cart_product.get();
+                                    cp.setQuantity(productDTO.getQuantity());
+                                } else {
+                                    cp = new Cart_Product(key, cart, product, productDTO.getQuantity());
+                                    cartProductSet.add(cp);
+                                }
+                                productDTO.setTotal(cp.getTotal());
+                                cartProductRepository.save(cp);
+                                return product;
+                            });
+                        total += productDTO.getTotal();
+                    }
+                    cart.setTotal(total);
+                }
+                log.debug("Changed Information for Cart: {}", cart);
+                return cart;
+            })
+            .map(CartDTO::new);
     }
 }

@@ -134,6 +134,12 @@
             <column name="cart_user_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
         </createTable>
 
         <createTable tableName="product">
@@ -290,6 +296,10 @@
             <column name="cart_receiver_id" type="varchar(6)"/>
             <column name="cart_delivery_id" type="varchar(6)"/>
             <column name="cart_user_id" type="bigint"/>
+            <column name="created_by" type="varchar(50)"/>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
         </loadData>
         <loadData
             file="config/liquibase/data/product.csv"

@@ -80,7 +80,6 @@ public class ProductResource {
     }
 
     @GetMapping("/products")
-    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.USER + "\")")
     public ResponseEntity<List<ProductDTO>> getProductsByType(@ParameterObject Pageable pageable, @RequestParam ProductType type) {
         log.debug("REST request to get all Products with {} type", type);
 
@@ -89,21 +88,20 @@ public class ProductResource {
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
-    @GetMapping("/products/{name}")
-    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.USER + "\")")
-    public ResponseEntity<ProductDTO> getProduct(@PathVariable("name") String name) {
-        log.debug("REST request to get Product: {}", name);
-        return ResponseUtil.wrapOrNotFound(productService.getProductByName(name));
+    @GetMapping("/products/{id}")
+    public ResponseEntity<ProductDTO> getProduct(@PathVariable("id") String id) {
+        log.debug("REST request to get Product: {}", id);
+        return ResponseUtil.wrapOrNotFound(productService.getProductByID(id));
     }
 
-    @DeleteMapping("/products/{name}")
+    @DeleteMapping("/products/{id}")
     @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
-    public ResponseEntity<Void> deleteProduct(@PathVariable("name") String name) {
-        log.debug("REST request to delete Product: {}", name);
-        productService.deleteProduct(name);
+    public ResponseEntity<Void> deleteProduct(@PathVariable("id") String id) {
+        log.debug("REST request to delete Product: {}", id);
+        productService.deleteProduct(id);
         return ResponseEntity
             .noContent()
-            .headers(HeaderUtil.createAlert(applicationName, "A product is deleted with identifier " + name, name))
+            .headers(HeaderUtil.createAlert(applicationName, "A product is deleted with identifier " + id, id))
             .build();
     }
 }

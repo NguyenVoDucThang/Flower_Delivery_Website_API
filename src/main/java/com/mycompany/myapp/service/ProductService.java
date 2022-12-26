@@ -75,14 +75,14 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<ProductDTO> getProductByName(String name) {
-        return productRepository.findOneByName(name).map(ProductDTO::new);
+    public Optional<ProductDTO> getProductByID(String id) {
+        return productRepository.findById(id).map(ProductDTO::new);
     }
 
     @Transactional
-    public void deleteProduct(String name) {
+    public void deleteProduct(String id) {
         productRepository
-            .findOneByName(name)
+            .findById(id)
             .ifPresent(product -> {
                 productRepository.delete(product);
                 log.debug("Deleted Product: {}", product);

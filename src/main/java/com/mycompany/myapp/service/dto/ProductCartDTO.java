@@ -57,4 +57,9 @@ public class ProductCartDTO implements Serializable {
     public void setTotal(int total) {
         this.total = total;
     }
+
+    @Override
+    public String toString() {
+        return "ProductCartDTO{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", quantity=" + quantity + ", total=" + total + '}';
+    }
 }

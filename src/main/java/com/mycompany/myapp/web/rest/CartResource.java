@@ -10,6 +10,7 @@ import com.mycompany.myapp.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -72,6 +74,17 @@ public class CartResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
 
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    @PutMapping("/carts")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public ResponseEntity<CartDTO> updateCart(@Valid @RequestBody CartDTO cartDTO) {
+        log.debug("REST request to update Cart: {}", cartDTO.getId());
+        Optional<CartDTO> updatedCart = cartService.updateCart(cartDTO);
+        return ResponseUtil.wrapOrNotFound(
+            updatedCart,
+            HeaderUtil.createAlert(applicationName, "A cart is updated with identifier: " + cartDTO.getId(), cartDTO.getId())
+        );
     }
 
     @DeleteMapping("/carts/{id}")
