@@ -9,7 +9,6 @@ public class ProductDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String id;
 
     private String name;

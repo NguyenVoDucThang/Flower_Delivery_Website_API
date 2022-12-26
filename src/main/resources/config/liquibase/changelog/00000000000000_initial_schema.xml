@@ -152,7 +152,7 @@
             <column name="product_feature" type="varchar(255)">
                 <constraints nullable="true"/>
             </column>
-            <column name="product_detail" type="varchar(255)">
+            <column name="product_detail" type="varchar(400)">
                 <constraints nullable="true"/>
             </column>
             <column name="product_image_url" type="varchar(255)">
