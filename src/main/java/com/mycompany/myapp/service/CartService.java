@@ -159,14 +159,15 @@ public class CartService {
     public Page<CartDTO> getAllCartsByStatus(Pageable pageable, CartStatus cartStatus) {
         User user = SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneByLogin).get();
         Set<String> auths = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
-        if (auths.contains(AuthoritiesConstants.ADMIN)) return cartRepository
-            .findAllByStatus(pageable, cartStatus)
-            .map(CartDTO::new); else return cartRepository.findAllByStatusAndUser(pageable, cartStatus, user).map(CartDTO::new);
-    }
-
-    @Transactional(readOnly = true)
-    public Page<CartDTO> getAllCarts(Pageable pageable) {
-        return cartRepository.findAll(pageable).map(CartDTO::new);
+        Page<Cart> carts;
+        if (auths.contains(AuthoritiesConstants.ADMIN)) {
+            if (cartStatus == null) carts = cartRepository.findAll(pageable); else carts =
+                cartRepository.findAllByStatus(pageable, cartStatus);
+        } else {
+            if (cartStatus == null) carts = cartRepository.findAllByUser(pageable, user); else carts =
+                cartRepository.findAllByStatusAndUser(pageable, cartStatus, user);
+        }
+        return carts.map(CartDTO::new);
     }
 
     @Transactional

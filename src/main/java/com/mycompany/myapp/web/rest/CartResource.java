@@ -18,6 +18,7 @@ import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,26 +66,15 @@ public class CartResource {
             .body(newCart);
     }
 
-    @GetMapping("/carts/{status}")
+    @GetMapping("/carts")
     @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.USER + "\")")
     public ResponseEntity<List<CartDTO>> getCartsByStatus(
-        @ParameterObject Pageable pageable,
-        @PathVariable(name = "status") CartStatus cartStatus
+        @PageableDefault(size = 100) Pageable pageable,
+        @RequestParam(name = "status", required = false) CartStatus cartStatus
     ) {
-        log.debug("REST request to get all Carts with {} status", cartStatus);
+        log.debug("REST request to get all Carts");
 
         final Page<CartDTO> page = cartService.getAllCartsByStatus(pageable, cartStatus);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
-    }
-
-    @GetMapping("/carts")
-    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
-    public ResponseEntity<List<CartDTO>> getAllCarts(@ParameterObject Pageable pageable) {
-        log.debug("REST request to get all Carts with");
-
-        final Page<CartDTO> page = cartService.getAllCarts(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
 
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);

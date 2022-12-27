@@ -20,4 +20,6 @@ public interface CartRepository extends JpaRepository<Cart, String> {
     Page<Cart> findAllByStatus(Pageable pageable, CartStatus cartStatus);
 
     Page<Cart> findAllByStatusAndUser(Pageable pageable, CartStatus cartStatus, User user);
+
+    Page<Cart> findAllByUser(Pageable pageable, User user);
 }
