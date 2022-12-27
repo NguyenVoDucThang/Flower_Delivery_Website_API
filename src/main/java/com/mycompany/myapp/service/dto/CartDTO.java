@@ -13,7 +13,6 @@ public class CartDTO implements Serializable {
 
     private static final long serialVersionUUID = 1L;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String id;
 
     private CartStatus status;

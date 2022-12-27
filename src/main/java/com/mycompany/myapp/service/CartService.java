@@ -126,26 +126,22 @@ public class CartService {
                     });
                 if (!cartDTO.getProducts().isEmpty()) {
                     Set<Cart_Product> cartProductSet = cart.getCartProductSet();
-                    int total = 0;
+                    int total = cart.getTotal();
                     for (ProductCartDTO productDTO : cartDTO.getProducts()) {
-                        productRepository
-                            .findById(productDTO.getId())
-                            .map(product -> {
-                                CartProductKey key = new CartProductKey(cart.getId(), product.getId());
-                                Optional<Cart_Product> cart_product = cartProductRepository.findById(key);
-                                Cart_Product cp;
-                                if (cart_product.isPresent()) {
-                                    cp = cart_product.get();
-                                    cp.setQuantity(productDTO.getQuantity());
-                                } else {
-                                    cp = new Cart_Product(key, cart, product, productDTO.getQuantity());
-                                    cartProductSet.add(cp);
-                                }
-                                productDTO.setTotal(cp.getTotal());
-                                cartProductRepository.save(cp);
-                                return product;
-                            });
-                        total += productDTO.getTotal();
+                        Product product = productRepository.findById(productDTO.getId()).get();
+
+                        CartProductKey key = new CartProductKey(cart.getId(), product.getId());
+                        Optional<Cart_Product> cart_product = cartProductRepository.findById(key);
+                        Cart_Product cp;
+                        if (cart_product.isPresent()) {
+                            cp = cart_product.get();
+                            total -= cp.getTotal();
+                            cp.setQuantity(productDTO.getQuantity());
+                        } else {
+                            cp = new Cart_Product(key, cart, product, productDTO.getQuantity());
+                            cartProductSet.add(cp);
+                        }
+                        total += cp.getTotal();
                     }
                     cart.setTotal(total);
                 }
