@@ -11,6 +11,7 @@ import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class PublicResource {
 
     @GetMapping("/products")
     public ResponseEntity<List<ProductDTO>> getProductsByType(
-        @ParameterObject Pageable pageable,
+        @PageableDefault(size = 100) Pageable pageable,
         @RequestParam(required = false) ProductType type
     ) {
         log.debug("REST request to get all Products with {} type", type);
