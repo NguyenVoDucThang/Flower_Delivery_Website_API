@@ -69,7 +69,7 @@ public class SecurityConfiguration {
             .antMatchers("/api/activate").permitAll()
             .antMatchers("/api/account/reset-password/init").permitAll()
             .antMatchers("/api/account/reset-password/finish").permitAll()
-            .antMatchers(HttpMethod.GET,"/api/admin/products/**").permitAll()
+            .antMatchers(HttpMethod.GET,"/api/admin/carts").hasAuthority(AuthoritiesConstants.ADMIN)
             .antMatchers(HttpMethod.DELETE,"/api/admin/carts/**").hasAuthority(AuthoritiesConstants.USER)
             .antMatchers(HttpMethod.GET,"/api/admin/carts/**").hasAuthority(AuthoritiesConstants.USER)
             .antMatchers(HttpMethod.POST,"/api/admin/carts/**").hasAuthority(AuthoritiesConstants.USER)

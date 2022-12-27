@@ -79,21 +79,6 @@ public class ProductResource {
         );
     }
 
-    @GetMapping("/products")
-    public ResponseEntity<List<ProductDTO>> getProductsByType(@ParameterObject Pageable pageable, @RequestParam ProductType type) {
-        log.debug("REST request to get all Products with {} type", type);
-
-        final Page<ProductDTO> page = productService.getAllProductsWithType(pageable, type);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
-    }
-
-    @GetMapping("/products/{id}")
-    public ResponseEntity<ProductDTO> getProduct(@PathVariable("id") String id) {
-        log.debug("REST request to get Product: {}", id);
-        return ResponseUtil.wrapOrNotFound(productService.getProductByID(id));
-    }
-
     @DeleteMapping("/products/{id}")
     @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<Void> deleteProduct(@PathVariable("id") String id) {

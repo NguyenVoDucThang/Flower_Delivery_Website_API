@@ -106,33 +106,6 @@ public class CartService {
         return new CartDTO(cart);
     }
 
-    @Transactional(readOnly = true)
-    public Page<CartDTO> getAllCartsByStatus(Pageable pageable, CartStatus cartStatus) {
-        User user = SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneByLogin).get();
-        Set<String> auths = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
-        if (auths.contains(AuthoritiesConstants.ADMIN)) return cartRepository
-            .findAllByStatus(pageable, cartStatus)
-            .map(CartDTO::new); else return cartRepository.findAllByStatusAndUser(pageable, cartStatus, user).map(CartDTO::new);
-    }
-
-    @Transactional
-    public void deleteCart(String id) {
-        Cart cart = cartRepository.findOneById(id).get();
-        SecurityUtils
-            .getCurrentUserLogin()
-            .flatMap(userRepository::findOneByLogin)
-            .ifPresent(user -> {
-                Set<String> auths = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
-                if (auths.contains(AuthoritiesConstants.ADMIN)) {
-                    cartRepository.delete(cart);
-                    log.debug("Deleted Cart: {}", cart);
-                } else if (cart.getUser().equals(user)) {
-                    cartRepository.delete(cart);
-                    log.debug("Deleted Cart: {}", cart);
-                }
-            });
-    }
-
     @Transactional
     public Optional<CartDTO> updateCart(CartDTO cartDTO) {
         return Optional
@@ -180,5 +153,37 @@ public class CartService {
                 return cart;
             })
             .map(CartDTO::new);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CartDTO> getAllCartsByStatus(Pageable pageable, CartStatus cartStatus) {
+        User user = SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneByLogin).get();
+        Set<String> auths = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
+        if (auths.contains(AuthoritiesConstants.ADMIN)) return cartRepository
+            .findAllByStatus(pageable, cartStatus)
+            .map(CartDTO::new); else return cartRepository.findAllByStatusAndUser(pageable, cartStatus, user).map(CartDTO::new);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CartDTO> getAllCarts(Pageable pageable) {
+        return cartRepository.findAll(pageable).map(CartDTO::new);
+    }
+
+    @Transactional
+    public void deleteCart(String id) {
+        Cart cart = cartRepository.findOneById(id).get();
+        SecurityUtils
+            .getCurrentUserLogin()
+            .flatMap(userRepository::findOneByLogin)
+            .ifPresent(user -> {
+                Set<String> auths = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
+                if (auths.contains(AuthoritiesConstants.ADMIN)) {
+                    cartRepository.delete(cart);
+                    log.debug("Deleted Cart: {}", cart);
+                } else if (cart.getUser().equals(user)) {
+                    cartRepository.delete(cart);
+                    log.debug("Deleted Cart: {}", cart);
+                }
+            });
     }
 }

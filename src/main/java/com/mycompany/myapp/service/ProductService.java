@@ -71,6 +71,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public Page<ProductDTO> getAllProductsWithType(Pageable pageable, ProductType type) {
+        if (type == null) return productRepository.findAll(pageable).map(ProductDTO::new);
         return productRepository.findAllByType(pageable, type).map(ProductDTO::new);
     }
 

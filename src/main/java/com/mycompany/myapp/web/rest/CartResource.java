@@ -65,12 +65,26 @@ public class CartResource {
             .body(newCart);
     }
 
-    @GetMapping("/carts")
+    @GetMapping("/carts/{status}")
     @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.USER + "\")")
-    public ResponseEntity<List<CartDTO>> getCartsByStatus(@ParameterObject Pageable pageable, @RequestParam CartStatus cartStatus) {
+    public ResponseEntity<List<CartDTO>> getCartsByStatus(
+        @ParameterObject Pageable pageable,
+        @PathVariable(name = "status") CartStatus cartStatus
+    ) {
         log.debug("REST request to get all Carts with {} status", cartStatus);
 
         final Page<CartDTO> page = cartService.getAllCartsByStatus(pageable, cartStatus);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/carts")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public ResponseEntity<List<CartDTO>> getAllCarts(@ParameterObject Pageable pageable) {
+        log.debug("REST request to get all Carts with");
+
+        final Page<CartDTO> page = cartService.getAllCarts(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
 
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
