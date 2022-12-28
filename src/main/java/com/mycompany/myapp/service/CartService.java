@@ -61,7 +61,7 @@ public class CartService {
         Cart cart = new Cart();
 
         // set status of cart
-        cart.setStatus(CartStatus.Delivering);
+        cart.setStatus(CartStatus.InCart);
         // set user
         SecurityUtils
             .getCurrentUserLogin()

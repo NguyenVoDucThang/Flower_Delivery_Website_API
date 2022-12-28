@@ -81,7 +81,7 @@ public class CartResource {
     }
 
     @PutMapping("/carts")
-    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.USER + "\")")
     public ResponseEntity<CartDTO> updateCart(@Valid @RequestBody CartDTO cartDTO) {
         log.debug("REST request to update Cart: {}", cartDTO.getId());
         Optional<CartDTO> updatedCart = cartService.updateCart(cartDTO);
