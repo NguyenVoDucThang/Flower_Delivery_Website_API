@@ -1,6 +1,5 @@
 package com.mycompany.myapp.service.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mycompany.myapp.domain.Cart_Product;
 import java.io.Serializable;
 
@@ -8,12 +7,15 @@ public class ProductCartDTO implements Serializable {
 
     private static final long serialVersionUUID = 1L;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String id;
 
     private String name;
 
     private int quantity;
+
+    private int price;
+
+    private String image_url;
 
     private int total;
 
@@ -23,6 +25,8 @@ public class ProductCartDTO implements Serializable {
         this.id = cart_product.getProduct().getId();
         this.name = cart_product.getProduct().getName();
         this.quantity = cart_product.getQuantity();
+        this.price = cart_product.getProduct().getPrice();
+        this.image_url = cart_product.getProduct().getImage_url();
         this.total = this.quantity * cart_product.getProduct().getPrice();
     }
 
@@ -58,8 +62,41 @@ public class ProductCartDTO implements Serializable {
         this.total = total;
     }
 
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public String getImage_url() {
+        return image_url;
+    }
+
+    public void setImage_url(String image_url) {
+        this.image_url = image_url;
+    }
+
     @Override
     public String toString() {
-        return "ProductCartDTO{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", quantity=" + quantity + ", total=" + total + '}';
+        return (
+            "ProductCartDTO{" +
+            "id='" +
+            id +
+            '\'' +
+            ", name='" +
+            name +
+            '\'' +
+            ", quantity=" +
+            quantity +
+            ", price=" +
+            price +
+            ", image_url=" +
+            image_url +
+            ", total=" +
+            total +
+            '}'
+        );
     }
 }
